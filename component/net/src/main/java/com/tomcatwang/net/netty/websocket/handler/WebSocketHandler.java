@@ -38,7 +38,6 @@ public class WebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketF
 
 
     @Override
-
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         //首次连接是FullHttpRequest，处理参数 by zhengkai.blog.csdn.net
         if (null != msg && msg instanceof FullHttpRequest) {

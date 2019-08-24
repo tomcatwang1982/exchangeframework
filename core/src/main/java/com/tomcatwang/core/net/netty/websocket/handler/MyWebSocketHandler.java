@@ -1,7 +1,6 @@
 package com.tomcatwang.core.net.netty.websocket.handler;
 
 import com.alibaba.fastjson.JSON;
-import com.tomcatwang.core.CoreApplication;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -23,7 +22,7 @@ import java.util.Map;
  */
 public class MyWebSocketHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
-    private Logger LOGGER = LoggerFactory.getLogger(CoreApplication.class);
+    private Logger LOGGER = LoggerFactory.getLogger(MyWebSocketHandler.class);
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {

@@ -1,6 +1,8 @@
 package com.tomcatwang.redis.config;
 
 import com.tomcatwang.redis.service.IRedisService;
+import com.tomcatwang.redis.service.RedisReceiver;
+import com.tomcatwang.redis.service.TestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +41,8 @@ public class RedisConfig extends CachingConfigurerSupport {
 
     //过期时间 毫秒
     private Duration timeToLive = Duration.of(100000, ChronoUnit.MILLIS);
+    private String clazz;
+    private String method;
 
     @Bean
     public KeyGenerator keyGenerator() {
@@ -123,27 +127,35 @@ public class RedisConfig extends CachingConfigurerSupport {
      * @创建时间
      * @描述 //初始化监听器
      */
-    @Bean
+    @Bean("redisMessageListenContainer")
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory) throws Exception {
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
+        //MessageListenerAdapter listenerAdapter = new MessageListenerAdapter(new TestService(), "receiveMessage");
+        //container.addMessageListener(listenerAdapter, new PatternTopic("topictest"));
         if (null != redisSubscribeInfo && !redisSubscribeInfo.equalsIgnoreCase("")) {
             String[] infos = redisSubscribeInfo.split(",");
+            //动态加载listener
             if (null != infos && infos.length > 0) {
                 for (String info : infos) {
                     String classZ = info.split("\\|")[0];
                     String method = info.split("\\|")[1];
                     String topic = info.split("\\|")[2];
-                    IRedisService service = (IRedisService) Class.forName(classZ).newInstance();
-                    MessageListenerAdapter listenerAdapter = new MessageListenerAdapter("", method);
-                    container.addMessageListener(listenerAdapter, new PatternTopic(topic));// 通道的名字
+                    container.addMessageListener(listenerAdapter(classZ,method), new PatternTopic(topic));// 通道的名字
                     LOGGER.info("初始化监听成功，监听通道：【" + topic + "】");
                 }
             }
         }
         //配置监听通道
         return container;
+    }
+
+
+    @Bean
+    MessageListenerAdapter listenerAdapter(Object clazz,Object method) throws Exception {
+        IRedisService service = (IRedisService) Class.forName(clazz.toString()).newInstance();
+        return new MessageListenerAdapter(service, method.toString());
     }
 
 

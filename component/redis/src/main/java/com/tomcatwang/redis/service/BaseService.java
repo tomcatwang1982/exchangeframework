@@ -2,15 +2,18 @@ package com.tomcatwang.redis.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 public class BaseService {
 
     @Autowired
-    @Qualifier("kafkaTemplate")
-    private KafkaTemplate kafkaTemplate;
+    @Qualifier("redisTemplate")
+    private RedisTemplate redisTemplate;
 
     public void sendMessage(String topic, Object message) {
-        kafkaTemplate.send(topic, message);
+        redisTemplate.convertAndSend(topic,message);
     }
 }
