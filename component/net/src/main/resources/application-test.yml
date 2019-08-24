@@ -1,0 +1,11 @@
+server:
+  port: 6683
+  #servlet:
+  #context-path: /test
+spring:
+  application:
+    name: net
+netty:
+  websocket :
+    server:
+      port: 12345
